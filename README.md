@@ -41,7 +41,7 @@ node --check plugins/apple-mail/scripts/apple-mail-mcp.mjs
 After publishing this repository to GitHub, update `plugins/apple-mail/.codex-plugin/plugin.json` if the final repository URL differs from:
 
 ```text
-https://github.com/leonadomaitis/apple-mail-codex-plugin
+https://github.com/GunniBusch/apple-mail-codex-plugin
 ```
 
 ## License

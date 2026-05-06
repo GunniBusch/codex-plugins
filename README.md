@@ -1,6 +1,6 @@
-# Apple Mail Codex Plugin
+# Codex Plugins
 
-This repository contains a Codex plugin marketplace with one plugin:
+This repository contains a Codex plugin marketplace. It currently includes:
 
 - `apple-mail`: compose visible drafts or send messages through the local macOS Apple Mail app.
 
@@ -38,10 +38,10 @@ python3 -m json.tool plugins/apple-mail/.mcp.json >/dev/null
 node --check plugins/apple-mail/scripts/apple-mail-mcp.mjs
 ```
 
-After publishing this repository to GitHub, update `plugins/apple-mail/.codex-plugin/plugin.json` if the final repository URL differs from:
+The repository URL used by plugin manifests is:
 
 ```text
-https://github.com/GunniBusch/apple-mail-codex-plugin
+https://github.com/GunniBusch/codex-plugins
 ```
 
 ## License

@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Code Auditor"
+  short_description: "Detect and fix AI-generated code smells"
+  default_prompt: "Use $llm-code-auditor to audit this code for generated-code patterns and simplify it safely."

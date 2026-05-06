@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="LLM Code Auditor">
+  <rect width="256" height="256" rx="56" fill="#111827"/>
+  <rect x="42" y="58" width="172" height="112" rx="20" fill="#F9FAFB"/>
+  <path d="M86 98l-24 20 24 20M170 98l24 20-24 20" fill="none" stroke="#111827" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M143 84l-30 70" fill="none" stroke="#2563EB" stroke-width="16" stroke-linecap="round"/>
+  <path d="M63 198l29-29h101" fill="none" stroke="#60A5FA" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="197" cy="194" r="14" fill="#22C55E"/>
+</svg>

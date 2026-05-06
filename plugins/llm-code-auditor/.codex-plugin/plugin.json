@@ -1,0 +1,45 @@
+{
+  "name": "llm-code-auditor",
+  "version": "0.1.0",
+  "description": "Detect and fix likely LLM-generated code smells and over-engineered agent code.",
+  "author": {
+    "name": "Leon Adomaitis",
+    "email": "leon@adomaitis.de",
+    "url": "https://github.com/GunniBusch"
+  },
+  "homepage": "https://github.com/GunniBusch/codex-plugins",
+  "repository": "https://github.com/GunniBusch/codex-plugins",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "llm-code",
+    "code-review",
+    "refactoring",
+    "code-smells",
+    "quality"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LLM Code Auditor",
+    "shortDescription": "Detect and fix AI-generated code smells",
+    "longDescription": "Audit generated or agent-written code for high-confidence LLM patterns such as single-use abstractions, naming inflation, utility dumping, pass-through layers, speculative extensibility, narration comments, hallucinated APIs, missing edge cases, and context-insensitive refactors.",
+    "developerName": "Leon Adomaitis",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/GunniBusch/codex-plugins",
+    "privacyPolicyURL": "https://github.com/GunniBusch/codex-plugins",
+    "termsOfServiceURL": "https://github.com/GunniBusch/codex-plugins",
+    "defaultPrompt": [
+      "Audit this code for LLM-generated patterns.",
+      "Simplify this agent-written code safely.",
+      "Find over-engineered abstractions here."
+    ],
+    "brandColor": "#111827",
+    "composerIcon": "./assets/llm-code-auditor-small.svg",
+    "logo": "./assets/llm-code-auditor.svg",
+    "screenshots": []
+  }
+}

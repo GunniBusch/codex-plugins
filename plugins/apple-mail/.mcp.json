@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "apple-mail": {
+      "command": "node",
+      "args": [
+        "./scripts/apple-mail-mcp.mjs"
+      ],
+      "note": "Local MCP server that controls macOS Mail with osascript. macOS may prompt for Automation permission on first use."
+    }
+  }
+}

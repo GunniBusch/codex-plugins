@@ -1,0 +1,20 @@
+{
+  "name": "leonadomaitis-codex-plugins",
+  "interface": {
+    "displayName": "Leon Adomaitis Codex Plugins"
+  },
+  "plugins": [
+    {
+      "name": "apple-mail",
+      "source": {
+        "source": "local",
+        "path": "./plugins/apple-mail"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

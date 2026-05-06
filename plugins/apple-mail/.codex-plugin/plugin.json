@@ -1,0 +1,44 @@
+{
+  "name": "apple-mail",
+  "version": "0.1.0",
+  "description": "Compose and send email through the local macOS Apple Mail app.",
+  "author": {
+    "name": "Leon Adomaitis",
+    "email": "leon@adomaitis.de",
+    "url": "https://github.com/leonadomaitis"
+  },
+  "homepage": "https://support.apple.com/mail",
+  "repository": "https://github.com/leonadomaitis/apple-mail-codex-plugin",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "apple-mail",
+    "email",
+    "macos",
+    "osascript"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Apple Mail",
+    "shortDescription": "Draft and send messages using macOS Mail",
+    "longDescription": "Use Apple Mail to create visible drafts or send messages from the local macOS Mail app through AppleScript automation. Direct sending requires an explicit confirmation argument.",
+    "developerName": "Leon Adomaitis",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://support.apple.com/mail",
+    "privacyPolicyURL": "https://www.apple.com/legal/privacy/",
+    "termsOfServiceURL": "https://www.apple.com/legal/internet-services/terms/site.html",
+    "defaultPrompt": [
+      "Draft an email in Apple Mail.",
+      "Send this message through Apple Mail.",
+      "Create a Mail draft for review."
+    ],
+    "brandColor": "#0A84FF",
+    "composerIcon": "./assets/apple-mail-small.svg",
+    "logo": "./assets/apple-mail.svg",
+    "screenshots": []
+  }
+}

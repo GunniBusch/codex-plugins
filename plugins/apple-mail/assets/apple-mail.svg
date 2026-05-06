@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Apple Mail">
+  <rect width="256" height="256" rx="56" fill="#0A84FF"/>
+  <rect x="42" y="70" width="172" height="116" rx="20" fill="#FFFFFF"/>
+  <path d="M54 83l74 58 74-58" fill="none" stroke="#0A84FF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M57 175l52-46m90 46l-52-46" fill="none" stroke="#0A84FF" stroke-width="12" stroke-linecap="round"/>
+</svg>

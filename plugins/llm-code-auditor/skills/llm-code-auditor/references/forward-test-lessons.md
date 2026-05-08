@@ -42,6 +42,20 @@ Rule:
 - For protocol servers, use a real minimal protocol handshake when possible.
 - If using closed stdin, report it as "startup crash probe", not "server works."
 
+## Missing Protocol Transport Arguments
+
+Observed transcript:
+
+- Zed launched `server.cjs`.
+- The server threw: `Connection input stream is not set. Use arguments ... '--node-ipc', '--stdio' or '--socket={number}'`.
+- This means the executable started, but the launcher did not provide the transport expected by the protocol runtime.
+
+Rule:
+
+- Check the wrapper/package command before changing the protocol server.
+- Add or test the required transport, for example stdio, IPC, socket, port, URL, or explicit streams.
+- Keep a regression test near the wrapper, because source tests can pass while launcher args are wrong.
+
 ## Scanner Improvement Policy
 
 - Do not suppress a class of findings because one example is false positive.

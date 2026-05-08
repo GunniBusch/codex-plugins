@@ -127,6 +127,8 @@ JS_PASS_THROUGH_RE = re.compile(
     r"\b(?:function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*\(([^)]*)\)\s*=>)\s*\{?\s*return\s+([A-Za-z_$][\w$.]*)\(([^)]*)\)",
     re.DOTALL,
 )
+LSP_CREATE_CONNECTION_RE = re.compile(r"\bcreateConnection\s*\(")
+LSP_TRANSPORT_ARG_RE = re.compile(r"--(?:stdio|node-ipc|socket(?:=|\b))")
 
 SEVERITY_ORDER = {"high": 0, "medium": 1, "low": 2}
 
@@ -157,16 +159,19 @@ def main() -> int:
 
     files = sorted({file for path in args.paths for file in iter_code_files(path)})
     findings: list[Finding] = []
+    file_texts: dict[Path, str] = {}
     for file in files:
         try:
             text = file.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             text = file.read_text(encoding="utf-8", errors="replace")
+        file_texts[file] = text
         findings.extend(scan_text(file, text))
         if file.suffix == ".py":
             findings.extend(scan_python_ast(file, text))
 
     findings.extend(scan_file_shape(files))
+    findings.extend(scan_project_context(file_texts))
     findings = [
         finding
         for finding in findings
@@ -393,6 +398,36 @@ def scan_python_ast(path: Path, text: str) -> list[Finding]:
     return findings
 
 
+def scan_project_context(file_texts: dict[Path, str]) -> list[Finding]:
+    findings: list[Finding] = []
+    lsp_sites = [
+        (path, line_number(text, match.start()))
+        for path, text in file_texts.items()
+        for match in LSP_CREATE_CONNECTION_RE.finditer(text)
+    ]
+    if not lsp_sites:
+        return findings
+
+    has_transport_arg = any(LSP_TRANSPORT_ARG_RE.search(text) for text in file_texts.values())
+    if has_transport_arg:
+        return findings
+
+    path, line = lsp_sites[0]
+    findings.append(
+        Finding(
+            path,
+            line,
+            "lsp-transport-contract",
+            "LSP server creates a connection, but scanned launcher code has no explicit transport argument.",
+            "Verify the wrapper or package script launches the server with --stdio, --node-ipc, or --socket.",
+            severity="high",
+            confidence=0.8,
+            evidence=("createConnection found", "no --stdio/--node-ipc/--socket found in scanned files"),
+        )
+    )
+    return findings
+
+
 def is_python_pass_through(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
     body = [statement for statement in node.body if not isinstance(statement, ast.Expr) or not is_docstring(statement)]
     if len(body) != 1 or not isinstance(body[0], ast.Return):
@@ -486,6 +521,10 @@ def called_name(node: ast.AST) -> str | None:
 
 def split_args(raw: str) -> list[str]:
     return [part.strip() for part in raw.split(",") if part.strip()]
+
+
+def line_number(text: str, offset: int) -> int:
+    return text.count("\n", 0, offset) + 1
 
 
 def display_parts(path: Path) -> tuple[str, ...]:

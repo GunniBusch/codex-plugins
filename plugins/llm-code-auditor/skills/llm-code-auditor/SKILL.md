@@ -28,6 +28,7 @@ The scanner prints severity, confidence, and evidence. Treat `HIGH` as an action
 When an agent uses this skill and reports a scanner finding, calibrate it before editing:
 
 - Protocol/framework names are often contractual. Do not rename LSP capabilities such as `codeActionProvider`, even though `Provider` is usually suspicious.
+- Protocol/runtime startup requires the launcher to satisfy the runtime contract. If a server says its input stream, socket, IPC channel, working directory, bundle, or generated artifact is missing, inspect the wrapper/package command before changing core business logic.
 - Generated build output is not source truth. If tests depend on ignored output such as `server/out`, make scripts deterministic instead of committing stale generated files.
 - Process smoke tests need valid exit expectations. A server run with closed stdin may exit nonzero because no protocol session occurred; treat absence of the original crash separately from exit code.
 - If a scanner warning is a false positive, improve the scanner or add an exception with evidence. Do not train future agents to ignore scanner output generally.

@@ -60,10 +60,53 @@ export function userProvider(data) {
         assert "naming-inflation" in output
 
 
+def test_lsp_connection_without_transport_arg_is_reported() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root / "server.ts").write_text(
+            """
+import { createConnection, ProposedFeatures } from "vscode-languageserver/node";
+
+createConnection(ProposedFeatures.all);
+""",
+            encoding="utf-8",
+        )
+
+        output = run_scan(root, "--min-severity", "high")
+        assert "lsp-transport-contract" in output
+        assert "--stdio" in output
+
+
+def test_lsp_connection_with_wrapper_transport_arg_is_not_reported() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root / "server.ts").write_text(
+            """
+import { createConnection, ProposedFeatures } from "vscode-languageserver/node";
+
+createConnection(ProposedFeatures.all);
+""",
+            encoding="utf-8",
+        )
+        (root / "lib.rs").write_text(
+            """
+fn language_server_args() -> Vec<String> {
+    vec!["server/out/server.cjs".to_string(), "--stdio".to_string()]
+}
+""",
+            encoding="utf-8",
+        )
+
+        output = run_scan(root, "--min-severity", "high")
+        assert "lsp-transport-contract" not in output
+
+
 def main() -> int:
     tests = [
         test_lsp_capability_names_are_not_naming_inflation,
         test_generic_provider_name_is_still_reported,
+        test_lsp_connection_without_transport_arg_is_reported,
+        test_lsp_connection_with_wrapper_transport_arg_is_not_reported,
     ]
     for test in tests:
         test()

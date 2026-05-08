@@ -47,6 +47,7 @@ python3 -m json.tool plugins/apple-mail/.mcp.json >/dev/null
 python3 -m json.tool plugins/llm-code-auditor/.codex-plugin/plugin.json >/dev/null
 node --check plugins/apple-mail/scripts/apple-mail-mcp.mjs
 python3 -m py_compile plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py
+python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_llm_code_smell_scan.py
 ```
 
 The repository URL used by plugin manifests is:

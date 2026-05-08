@@ -1,6 +1,6 @@
 {
   "name": "llm-code-auditor",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Detect and fix likely LLM-generated code smells, over-engineering, brittle tests, hallucinated APIs, and redundant defensive code.",
   "author": {
     "name": "Leon Adomaitis",

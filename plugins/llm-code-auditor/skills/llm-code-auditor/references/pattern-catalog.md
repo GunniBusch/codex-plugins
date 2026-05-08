@@ -38,6 +38,8 @@ Fix:
 - Rename by owned domain concept: `InvoiceTotals`, `PasswordResetEmail`, `MailDraft`, `CheckoutSession`.
 - Split mixed responsibilities before renaming.
 
+Do not flag contractual external vocabulary. If a framework, protocol, schema, or generated client requires a name such as `codeActionProvider`, `completionProvider`, `resolveProvider`, `data`, or `payload`, keep the contract name and improve clarity around it instead.
+
 ### 3. Utility dumping
 
 Detect files or modules named `utils`, `helpers`, `common`, `shared`, `base`, `misc`, `general`.

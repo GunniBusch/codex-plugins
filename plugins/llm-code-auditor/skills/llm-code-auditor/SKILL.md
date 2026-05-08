@@ -23,6 +23,15 @@ The scanner prints severity, confidence, and evidence. Treat `HIGH` as an action
 5. Prefer deleting, inlining, renaming, moving code near its use, and strengthening boundary invariants over adding new frameworks.
 6. Verify with the repo's formatter, type checker, linter, and tests.
 
+## Forward-Test Lessons
+
+When an agent uses this skill and reports a scanner finding, calibrate it before editing:
+
+- Protocol/framework names are often contractual. Do not rename LSP capabilities such as `codeActionProvider`, even though `Provider` is usually suspicious.
+- Generated build output is not source truth. If tests depend on ignored output such as `server/out`, make scripts deterministic instead of committing stale generated files.
+- Process smoke tests need valid exit expectations. A server run with closed stdin may exit nonzero because no protocol session occurred; treat absence of the original crash separately from exit code.
+- If a scanner warning is a false positive, improve the scanner or add an exception with evidence. Do not train future agents to ignore scanner output generally.
+
 ## Targeted Skills
 
 Use the narrower skill when the task matches a specific smell family:
@@ -84,6 +93,8 @@ Apply these transformations:
 ## Guardrails
 
 - Do not "simplify" public APIs, database schemas, migrations, serialized formats, or plugin interfaces without checking compatibility.
+- Do not rename external protocol, schema, framework, or API vocabulary just because it contains words like `Provider`, `Handler`, `Service`, `data`, or `payload`; those names may be contractual.
+- Do not assume nonzero smoke-test exit means startup failure when the command expects an interactive protocol session; inspect stderr/stdout for the specific failure being tested.
 - Do not inline test seams, dependency injection for external services, security boundaries, or concurrency boundaries just because there is one implementation.
 - Do not replace domain code with clever abstractions. High-quality code is often boring, direct, and locally obvious.
 - Keep a before/after behavior proof: test, type check, static analysis, or a precise manual trace.

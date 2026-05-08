@@ -71,6 +71,42 @@ GENERIC_WORDS = {
     "context",
 }
 
+EXTERNAL_PROTOCOL_NAMES = {
+    # Language Server Protocol capability names. These are protocol vocabulary,
+    # not naming-inflation evidence.
+    "callHierarchyProvider",
+    "codeActionProvider",
+    "codeLensProvider",
+    "colorProvider",
+    "completionProvider",
+    "declarationProvider",
+    "definitionProvider",
+    "diagnosticProvider",
+    "documentFormattingProvider",
+    "documentHighlightProvider",
+    "documentLinkProvider",
+    "documentOnTypeFormattingProvider",
+    "documentRangeFormattingProvider",
+    "documentSymbolProvider",
+    "executeCommandProvider",
+    "foldingRangeProvider",
+    "hoverProvider",
+    "implementationProvider",
+    "inlayHintProvider",
+    "inlineValueProvider",
+    "linkedEditingRangeProvider",
+    "monikerProvider",
+    "referencesProvider",
+    "renameProvider",
+    "resolveProvider",
+    "selectionRangeProvider",
+    "semanticTokensProvider",
+    "signatureHelpProvider",
+    "typeDefinitionProvider",
+    "typeHierarchyProvider",
+    "workspaceSymbolProvider",
+}
+
 GENERIC_FUNCTION_RE = re.compile(
     r"\b(processData|handleRequest|executeTask|performAction|doStuff|handleData|processItem)\b"
 )
@@ -207,6 +243,8 @@ def scan_text(path: Path, text: str) -> list[Finding]:
 
     for index, line in enumerate(lines, start=1):
         for match in GENERIC_SUFFIX_RE.finditer(line):
+            if is_external_protocol_name(match.group(0)):
+                continue
             findings.append(
                 Finding(
                     path,
@@ -415,6 +453,10 @@ def classify_single_use_function(
         confidence=max(0.0, min(confidence, 1.0)),
         evidence=tuple(evidence),
     )
+
+
+def is_external_protocol_name(name: str) -> bool:
+    return name in EXTERNAL_PROTOCOL_NAMES
 
 
 def executable_statement_count(node: ast.FunctionDef | ast.AsyncFunctionDef) -> int:

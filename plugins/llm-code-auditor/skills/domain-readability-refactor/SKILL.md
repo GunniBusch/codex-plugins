@@ -9,7 +9,7 @@ Use this skill to make code read like a domain expert wrote it.
 
 ## Workflow
 
-1. Read surrounding code, tests, schema names, route names, UI labels, and logs before renaming.
+1. Read surrounding code, tests, schema names, route names, UI labels, protocol docs, and logs before renaming.
 2. Replace job-title names with owned domain concepts.
 3. Move behavior near the data/invariant it changes most.
 4. Delete narration comments; keep comments for constraints, protocol quirks, performance tradeoffs, or bug history.
@@ -29,5 +29,9 @@ With names from:
 - protocol objects and external API docs
 - user-visible workflows
 - business invariants
+
+Do not rename contractual framework/protocol names. Examples: LSP capability names such as `codeActionProvider`, `hoverProvider`, `completionProvider`, and `resolveProvider` are external vocabulary, not generic naming inflation.
+
+When a contractual name is unclear, improve the surrounding local name instead of the contract field. For example, keep `codeActionProvider` but name the enclosing object `serverCapabilities` or `formulaEditCapabilities` if that better describes ownership.
 
 Read `../llm-code-auditor/references/human-code-quality.md` for locality and reviewability principles.

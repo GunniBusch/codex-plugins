@@ -27,6 +27,12 @@ Scanner output includes severity, confidence, and evidence. Low-severity finding
 python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py --min-severity medium <path>
 ```
 
+Run scanner regression tests:
+
+```bash
+python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_llm_code_smell_scan.py
+```
+
 ## Targeted Skills
 
 - `llm-code-auditor`: umbrella audit for generated or agent-written code.

@@ -21,6 +21,12 @@ It also includes a dependency-free heuristic scanner:
 python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py <path>
 ```
 
+Scanner output includes severity, confidence, and evidence. Low-severity findings are review leads, not automatic refactor instructions:
+
+```bash
+python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py --min-severity medium <path>
+```
+
 ## Targeted Skills
 
 - `llm-code-auditor`: umbrella audit for generated or agent-written code.

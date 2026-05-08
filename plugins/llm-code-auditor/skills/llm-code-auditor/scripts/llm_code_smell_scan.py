@@ -92,6 +92,8 @@ JS_PASS_THROUGH_RE = re.compile(
     re.DOTALL,
 )
 
+SEVERITY_ORDER = {"high": 0, "medium": 1, "low": 2}
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -100,12 +102,21 @@ class Finding:
     code: str
     message: str
     action: str
+    severity: str = "medium"
+    confidence: float = 0.5
+    evidence: tuple[str, ...] = ()
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Scan for likely LLM-generated code smells.")
     parser.add_argument("paths", nargs="+", type=Path)
     parser.add_argument("--max-findings", type=int, default=200)
+    parser.add_argument(
+        "--min-severity",
+        choices=("low", "medium", "high"),
+        default="low",
+        help="Lowest severity to print. Default keeps weak review leads visible.",
+    )
     args = parser.parse_args()
 
     files = sorted({file for path in args.paths for file in iter_code_files(path)})
@@ -120,12 +131,22 @@ def main() -> int:
             findings.extend(scan_python_ast(file, text))
 
     findings.extend(scan_file_shape(files))
-    findings = sorted(findings, key=lambda item: (str(item.path), item.line, item.code))
+    findings = [
+        finding
+        for finding in findings
+        if SEVERITY_ORDER[finding.severity] <= SEVERITY_ORDER[args.min_severity]
+    ]
+    findings = sorted(
+        findings,
+        key=lambda item: (SEVERITY_ORDER[item.severity], str(item.path), item.line, item.code),
+    )
 
     for finding in findings[: args.max_findings]:
+        evidence = f" Evidence: {'; '.join(finding.evidence)}" if finding.evidence else ""
         print(
-            f"{finding.path}:{finding.line}: {finding.code}: {finding.message} "
-            f"Action: {finding.action}"
+            f"{finding.path}:{finding.line}: {finding.severity.upper()} "
+            f"{finding.confidence:.2f} {finding.code}: {finding.message}"
+            f"{evidence} Action: {finding.action}"
         )
 
     hidden = max(0, len(findings) - args.max_findings)
@@ -164,6 +185,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                 "utility-dumping",
                 f"Generic module name `{path.name}` can hide unrelated behavior.",
                 "Move functions near their usage or split by domain concept.",
+                severity="high",
+                confidence=0.85,
+                evidence=("filename is a known utility-dump name",),
             )
         )
 
@@ -175,6 +199,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                 "over-fragmentation",
                 "Deep path may indicate pattern-driven decomposition.",
                 "Check whether directories map to real domain boundaries; merge if not.",
+                severity="low",
+                confidence=0.25,
+                evidence=("path has at least 8 segments",),
             )
         )
 
@@ -187,6 +214,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                     "naming-inflation",
                     f"Generic role name `{match.group(0)}` found.",
                     "Rename to a concrete domain noun if the role is not a real boundary.",
+                    severity="medium",
+                    confidence=0.6,
+                    evidence=("name uses a generic architecture/job-title suffix",),
                 )
             )
 
@@ -198,6 +228,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                     "generic-abstraction-language",
                     "Generic function name found.",
                     "Rename from the domain operation or data invariant.",
+                    severity="medium",
+                    confidence=0.7,
+                    evidence=("name matches a generated-code placeholder verb",),
                 )
             )
 
@@ -211,6 +244,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                             "generic-abstraction-language",
                             f"Generic term `{word}` found in a declaration/API surface.",
                             "Replace with domain language when this is not a boundary type.",
+                            severity="medium",
+                            confidence=0.55,
+                            evidence=("generic noun appears in a declaration or API surface",),
                         )
                     )
                     break
@@ -224,6 +260,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                     "comment-narration",
                     "Comment appears to narrate code.",
                     "Delete unless it explains a non-obvious constraint.",
+                    severity="medium",
+                    confidence=0.65,
+                    evidence=("comment starts with a code-action verb",),
                 )
             )
 
@@ -236,6 +275,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                 "faux-robustness",
                 "Catch block appears to log and rethrow without recovery.",
                 "Remove it or add meaningful context/recovery.",
+                severity="high",
+                confidence=0.8,
+                evidence=("catch block logs and rethrows",),
             )
         )
 
@@ -251,6 +293,9 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                     "pass-through-layer",
                     "Function forwards unchanged arguments.",
                     "Inline or move real validation/mapping into this layer.",
+                    severity="high",
+                    confidence=0.85,
+                    evidence=("parameters and forwarded arguments match exactly",),
                 )
             )
 
@@ -274,11 +319,13 @@ def scan_python_ast(path: Path, text: str) -> list[Finding]:
     findings: list[Finding] = []
     function_defs: dict[str, ast.FunctionDef | ast.AsyncFunctionDef] = {}
     calls: Counter[str] = Counter()
+    pass_through_lines: set[int] = set()
 
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             function_defs[node.name] = node
             if is_python_pass_through(node):
+                pass_through_lines.add(node.lineno)
                 findings.append(
                     Finding(
                         path,
@@ -286,6 +333,9 @@ def scan_python_ast(path: Path, text: str) -> list[Finding]:
                         "pass-through-layer",
                         f"`{node.name}` forwards unchanged arguments.",
                         "Inline if no boundary, validation, or mapping is added.",
+                        severity="high",
+                        confidence=0.9,
+                        evidence=("single return statement delegates same parameters unchanged",),
                     )
                 )
         elif isinstance(node, ast.Call):
@@ -294,17 +344,12 @@ def scan_python_ast(path: Path, text: str) -> list[Finding]:
                 calls[name] += 1
 
     for name, node in function_defs.items():
-        if name.startswith("_") or name == "main":
+        if name == "main" or node.lineno in pass_through_lines:
             continue
-        if calls[name] == 1 and is_tiny_or_generic_function(name, node):
+        if calls[name] == 1:
+            finding = classify_single_use_function(path, name, node)
             findings.append(
-                Finding(
-                    path,
-                    node.lineno,
-                    "single-use-abstraction",
-                    f"`{name}` appears to be called once in this file.",
-                    "Check repo-wide usage; inline if it is not a real concept.",
-                )
+                finding
             )
 
     return findings
@@ -325,12 +370,58 @@ def is_python_pass_through(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool
     return bool(params) and params == forwarded and len(call.args) == len(params)
 
 
-def is_tiny_or_generic_function(name: str, node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+def classify_single_use_function(
+    path: Path,
+    name: str,
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> Finding:
     lowered = name.lower()
-    return (
-        GENERIC_FUNCTION_RE.search(name) is not None
-        or any(lowered.endswith(suffix.lower()) for suffix in GENERIC_SUFFIXES)
-        or any(word in lowered for word in GENERIC_WORDS)
+    evidence = ["called once in this file"]
+    action = "Check repo-wide usage; inline if it is not a real concept."
+    severity = "low"
+    confidence = 0.25
+    message = f"`{name}` is a single-use helper; this may be fine if the name carries a real concept."
+
+    if name.startswith("_"):
+        evidence.append("private helper")
+        confidence -= 0.05
+
+    if GENERIC_FUNCTION_RE.search(name):
+        evidence.append("generic generated-style function name")
+        severity = "medium"
+        confidence = 0.75
+        message = f"`{name}` is single-use and generically named."
+    elif any(lowered.endswith(suffix.lower()) for suffix in GENERIC_SUFFIXES):
+        evidence.append("generic architecture/job-title suffix")
+        severity = "medium"
+        confidence = 0.65
+        message = f"`{name}` is single-use and uses a generic role suffix."
+    elif any(word in lowered for word in GENERIC_WORDS):
+        evidence.append("generic noun in helper name")
+        severity = "medium"
+        confidence = 0.6
+        message = f"`{name}` is single-use and uses generic language."
+    elif executable_statement_count(node) <= 2:
+        evidence.append("tiny helper body")
+        confidence = 0.35
+
+    return Finding(
+        path,
+        node.lineno,
+        "single-use-abstraction",
+        message,
+        action,
+        severity=severity,
+        confidence=max(0.0, min(confidence, 1.0)),
+        evidence=tuple(evidence),
+    )
+
+
+def executable_statement_count(node: ast.FunctionDef | ast.AsyncFunctionDef) -> int:
+    return sum(
+        1
+        for statement in node.body
+        if not isinstance(statement, ast.Expr) or not is_docstring(statement)
     )
 
 

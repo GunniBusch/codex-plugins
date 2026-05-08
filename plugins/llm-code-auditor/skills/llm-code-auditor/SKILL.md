@@ -16,6 +16,8 @@ Use this umbrella skill to turn "plausible generated code" into code a sharp mai
 python3 scripts/llm_code_smell_scan.py <path>
 ```
 
+The scanner prints severity, confidence, and evidence. Treat `HIGH` as an actionable lead, `MEDIUM` as likely worth inspection, and `LOW` as a weak review signal that may be legitimate human code. Use `--min-severity medium` to hide weak leads.
+
 3. Read `references/pattern-catalog.md`, `references/llm-failure-taxonomy.md`, or `references/human-code-quality.md` when the scanner finds issues, the code feels generated, or the task asks for a deep cleanup.
 4. Fix only issues that are behavior-preserving or covered by tests. Add or adapt tests before non-trivial rewrites.
 5. Prefer deleting, inlining, renaming, moving code near its use, and strengthening boundary invariants over adding new frameworks.

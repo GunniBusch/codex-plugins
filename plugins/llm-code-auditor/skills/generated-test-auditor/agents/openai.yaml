@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generated Test Auditor"
+  short_description: "Repair brittle AI-written tests"
+  default_prompt: "Use $generated-test-auditor to make these tests behavior-focused and less brittle."

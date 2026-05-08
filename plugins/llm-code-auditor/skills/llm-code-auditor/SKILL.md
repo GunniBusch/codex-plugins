@@ -1,11 +1,11 @@
 ---
 name: llm-code-auditor
-description: Detect and fix likely AI/LLM-generated code quality problems, including over-abstraction, generic naming, utility dumping, pass-through layers, speculative extensibility, hallucinated APIs, missing edge cases, redundant defensive code, narration comments, symmetry/repetition, and context-insensitive refactors. Use when asked to audit, review, clean up, de-AI, simplify, harden, or improve code that may have been produced by an LLM or coding agent.
+description: Use when asked to audit, review, clean up, de-AI, simplify, harden, or improve code that may be AI-generated, agent-written, over-engineered, redundant, brittle, too generic, too strict, too defensive, hard to read, inefficient, or likely to hide bugs.
 ---
 
 # LLM Code Auditor
 
-Use this skill to turn "plausible generated code" into code a sharp maintainer would accept. Treat LLM-ness as a hypothesis, not a verdict: prove issues from local context, tests, types, call sites, and runtime behavior.
+Use this umbrella skill to turn "plausible generated code" into code a sharp maintainer would accept. Treat LLM-ness as a hypothesis, not a verdict: prove issues from local context, tests, types, call sites, and runtime behavior.
 
 ## Quick Start
 
@@ -16,10 +16,21 @@ Use this skill to turn "plausible generated code" into code a sharp maintainer w
 python3 scripts/llm_code_smell_scan.py <path>
 ```
 
-3. Read `references/pattern-catalog.md` when the scanner finds issues, the code feels generated, or the task asks for a deep cleanup.
+3. Read `references/pattern-catalog.md`, `references/llm-failure-taxonomy.md`, or `references/human-code-quality.md` when the scanner finds issues, the code feels generated, or the task asks for a deep cleanup.
 4. Fix only issues that are behavior-preserving or covered by tests. Add or adapt tests before non-trivial rewrites.
 5. Prefer deleting, inlining, renaming, moving code near its use, and strengthening boundary invariants over adding new frameworks.
 6. Verify with the repo's formatter, type checker, linter, and tests.
+
+## Targeted Skills
+
+Use the narrower skill when the task matches a specific smell family:
+
+- `abstraction-pruner`: one-off interfaces, pass-through layers, factories, strategies, event buses, managers.
+- `boundary-invariant-auditor`: redundant checks, missing boundary validation, too-strict validation, impossible states, guard clutter.
+- `domain-readability-refactor`: vague naming, utility dumping, narration comments, feature envy, poor locality.
+- `generated-test-auditor`: brittle LLM tests, duplicated test cases, over-mocking, implementation-detail assertions, weak assertions.
+- `dependency-api-hallucination-check`: hallucinated packages, imports, methods, attributes, configuration, examples, docs.
+- `performance-simplicity-auditor`: inefficient generated code, fake optimization, caches/retries/parallelism without proof.
 
 ## Audit Workflow
 
@@ -53,6 +64,7 @@ Look beyond style. LLM-generated code often looks clean while failing at context
 - Incomplete generation: TODO paths, unreachable stubs, no-op catches, half-wired config, missing cleanup.
 - Non-prompted consideration: extra behavior the user did not ask for, especially persistence, telemetry, network calls, broad permissions, or retries.
 - Security drift: unsafe string construction, path traversal, weak auth checks, leaking secrets in logs, trusting generated input validation.
+- Test drift: tests that mirror generated structure, overfit to examples, assert implementation details, or become too strict to allow safe refactoring.
 
 ### 4. Refactor toward high-quality human code
 
@@ -62,7 +74,7 @@ Apply these transformations:
 - Rename to domain nouns and verbs visible in product language, schema names, protocols, and user workflows.
 - Move behavior to the data or module that owns the invariant.
 - Replace repeated shape with a smaller data model, table-driven mapping, or one specialized path per real domain distinction.
-- Centralize validation at trust boundaries; use types and constructors to make invalid states unrepresentable.
+- Centralize validation at trust boundaries; use types and constructors to make invalid states unrepresentable. Remove the 10th repeated `if` when upstream invariants already prove it.
 - Prefer standard library and framework idioms already used in the repo.
 - Remove comments that narrate; keep comments that explain surprising constraints, tradeoffs, protocol rules, or bug workarounds.
 - Delete unused config, optionality, and extension points unless there is a second real use now.

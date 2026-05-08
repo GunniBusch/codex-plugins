@@ -3,7 +3,7 @@
 This repository contains a Codex plugin marketplace. It currently includes:
 
 - `apple-mail`: compose visible drafts or send messages through the local macOS Apple Mail app.
-- `llm-code-auditor`: detect and fix likely LLM-generated code smells and over-engineered agent code.
+- `llm-code-auditor`: detect and fix likely LLM-generated code smells, over-engineered agent code, brittle generated tests, hallucinated APIs, and redundant defensive checks.
 
 ## Structure
 
@@ -34,7 +34,7 @@ macOS may ask for Automation permission the first time the MCP server controls M
 
 ## LLM Code Auditor Plugin
 
-The plugin bundles a skill and a small scanner for reviewing generated or agent-written code. It focuses on high-confidence generated-code patterns, context-sensitive simplification, and behavior-preserving cleanup.
+The plugin bundles an umbrella skill, targeted cleanup skills, shared references, and a small scanner for reviewing generated or agent-written code. It focuses on high-confidence generated-code patterns, context-sensitive simplification, readable domain code, useful tests, and behavior-preserving cleanup.
 
 ## Development
 

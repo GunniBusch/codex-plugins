@@ -1,0 +1,4 @@
+interface:
+  display_name: "Boundary Invariant Auditor"
+  short_description: "Fix redundant or missing checks"
+  default_prompt: "Use $boundary-invariant-auditor to clean up validation and guard logic."

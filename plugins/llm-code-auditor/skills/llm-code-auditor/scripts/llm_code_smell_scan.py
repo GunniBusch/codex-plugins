@@ -190,7 +190,7 @@ def scan_text(path: Path, text: str) -> list[Finding]:
                 )
             )
 
-        if GENERIC_FUNCTION_RE.search(line):
+        if GENERIC_FUNCTION_RE.search(line) and not is_scanner_pattern_definition(line):
             findings.append(
                 Finding(
                     path,
@@ -326,8 +326,17 @@ def is_python_pass_through(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool
 
 
 def is_tiny_or_generic_function(name: str, node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
-    body = [statement for statement in node.body if not isinstance(statement, ast.Expr) or not is_docstring(statement)]
-    return len(body) <= 3 or GENERIC_FUNCTION_RE.search(name) is not None
+    lowered = name.lower()
+    return (
+        GENERIC_FUNCTION_RE.search(name) is not None
+        or any(lowered.endswith(suffix.lower()) for suffix in GENERIC_SUFFIXES)
+        or any(word in lowered for word in GENERIC_WORDS)
+    )
+
+
+def is_scanner_pattern_definition(line: str) -> bool:
+    stripped = line.strip()
+    return "_RE =" in line or "GENERIC_" in line or stripped.startswith(("r\"", "r'"))
 
 
 def is_docstring(statement: ast.Expr) -> bool:

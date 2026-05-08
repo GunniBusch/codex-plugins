@@ -1,7 +1,7 @@
 {
   "name": "llm-code-auditor",
-  "version": "0.1.0",
-  "description": "Detect and fix likely LLM-generated code smells and over-engineered agent code.",
+  "version": "0.3.0",
+  "description": "Detect and fix likely LLM-generated code smells, over-engineering, brittle tests, hallucinated APIs, and redundant defensive code.",
   "author": {
     "name": "Leon Adomaitis",
     "email": "leon@adomaitis.de",
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "LLM Code Auditor",
     "shortDescription": "Detect and fix AI-generated code smells",
-    "longDescription": "Audit generated or agent-written code for high-confidence LLM patterns such as single-use abstractions, naming inflation, utility dumping, pass-through layers, speculative extensibility, narration comments, hallucinated APIs, missing edge cases, and context-insensitive refactors.",
+    "longDescription": "Audit generated or agent-written code with an umbrella skill plus targeted skills for abstraction pruning, boundary invariants, readable domain code, generated tests, dependency/API hallucinations, and performance simplicity. The plugin focuses on code that is direct, readable, efficient, testable, and easy to inspect for bugs without speculative layers or redundant checks.",
     "developerName": "Leon Adomaitis",
     "category": "Coding",
     "capabilities": [
@@ -35,7 +35,7 @@
     "defaultPrompt": [
       "Audit this code for LLM-generated patterns.",
       "Simplify this agent-written code safely.",
-      "Find over-engineered abstractions here."
+      "Review these tests for brittle LLM patterns."
     ],
     "brandColor": "#111827",
     "composerIcon": "./assets/llm-code-auditor-small.svg",

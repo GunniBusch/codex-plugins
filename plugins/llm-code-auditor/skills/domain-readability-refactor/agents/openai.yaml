@@ -1,4 +1,0 @@
-interface:
-  display_name: "Domain Readability Refactor"
-  short_description: "Rename and reshape unclear code"
-  default_prompt: "Use $domain-readability-refactor to make this code clearer and more domain-specific."

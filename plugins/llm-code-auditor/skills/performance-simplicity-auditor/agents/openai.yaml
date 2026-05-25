@@ -1,4 +1,0 @@
-interface:
-  display_name: "Performance Simplicity Auditor"
-  short_description: "Make code efficient without excess"
-  default_prompt: "Use $performance-simplicity-auditor to simplify and speed up this code responsibly."

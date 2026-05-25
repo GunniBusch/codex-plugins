@@ -1,4 +1,0 @@
-interface:
-  display_name: "Abstraction Pruner"
-  short_description: "Remove speculative code layers"
-  default_prompt: "Use $abstraction-pruner to simplify these abstractions without breaking behavior."

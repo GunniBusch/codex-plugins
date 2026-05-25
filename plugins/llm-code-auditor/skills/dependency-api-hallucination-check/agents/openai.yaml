@@ -1,4 +1,0 @@
-interface:
-  display_name: "Dependency API Hallucination Check"
-  short_description: "Verify generated APIs and packages"
-  default_prompt: "Use $dependency-api-hallucination-check to verify these imports, packages, and API calls."

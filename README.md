@@ -3,7 +3,7 @@
 This repository contains a Codex plugin marketplace. It currently includes:
 
 - `apple-mail`: compose visible drafts or send messages through the local macOS Apple Mail app.
-- `llm-code-auditor`: model and improve AI-shaped code quality with a quality lens, concrete scanner leads, benchmarks, and cleanup skills.
+- `llm-code-auditor`: model and improve AI-shaped code quality with code remodel markup, a quality lens, concrete scanner leads, benchmarks, and cleanup skills.
 
 ## Structure
 
@@ -40,7 +40,7 @@ macOS may ask for Automation permission the first time the MCP server controls M
 
 ## LLM Code Auditor Plugin
 
-The plugin bundles an umbrella skill, targeted cleanup skills, shared references, a quality-lens tool, a scanner, and benchmark fixtures for reviewing generated or agent-written code. It focuses on higher-level code quality pressure first, then uses concrete leads as evidence for context-sensitive simplification, readable domain code, useful tests, and behavior-preserving cleanup.
+The plugin bundles an umbrella skill, targeted cleanup skills, shared references, a code-remodel tool, a quality-lens tool, a scanner, and benchmark fixtures for reviewing generated or agent-written code. It focuses on higher-level code quality pressure first, then uses concrete leads as evidence for context-sensitive simplification, readable domain code, useful tests, and behavior-preserving cleanup.
 
 ## Development
 
@@ -54,9 +54,12 @@ python3 -m json.tool plugins/llm-code-auditor/.codex-plugin/plugin.json >/dev/nu
 node --check plugins/apple-mail/scripts/apple-mail-mcp.mjs
 python3 -m py_compile \
   plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py \
+  plugins/llm-code-auditor/skills/llm-code-auditor/scripts/code_remodel.py \
   plugins/llm-code-auditor/skills/llm-code-auditor/scripts/quality_lens.py
 python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_llm_code_smell_scan.py
+python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_code_remodel.py
 python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_quality_lens.py
+python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_quality_benchmark.py
 ```
 
 The repository URL used by plugin manifests is:

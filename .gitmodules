@@ -1,3 +1,0 @@
-[submodule "plugins/llm-code-auditor"]
-	path = plugins/llm-code-auditor
-	url = https://github.com/GunniBusch/llm-code-auditor.git

@@ -19,8 +19,9 @@
     {
       "name": "llm-code-auditor",
       "source": {
-        "source": "local",
-        "path": "./plugins/llm-code-auditor"
+        "source": "url",
+        "url": "https://github.com/GunniBusch/llm-code-auditor.git",
+        "ref": "main"
       },
       "policy": {
         "installation": "AVAILABLE",

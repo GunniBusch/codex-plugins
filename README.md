@@ -15,18 +15,12 @@ plugins/apple-mail/
   assets/
   scripts/
   skills/
-plugins/llm-code-auditor/
-  .codex-plugin/plugin.json
-  assets/
-  skills/
 ```
 
-Codex discovers the repo-local marketplace at `.agents/plugins/marketplace.json`. Plugin source paths point to `./plugins/<plugin-name>`, relative to the repository root.
-
-`plugins/llm-code-auditor` is a Git submodule that points at the dedicated plugin repository:
+Codex discovers the repo-local marketplace at `.agents/plugins/marketplace.json`. The Apple Mail plugin is stored in this repository as a local source. The LLM Code Auditor plugin is installed from its dedicated Git repository with a `source=url` entry and is marked `INSTALLED_BY_DEFAULT` so it is added to Codex when this marketplace is refreshed.
 
 ```text
-https://github.com/GunniBusch/llm-code-auditor
+https://github.com/GunniBusch/llm-code-auditor.git
 ```
 
 ## Apple Mail Plugin
@@ -50,16 +44,10 @@ Validate the plugin metadata and server syntax:
 python3 -m json.tool .agents/plugins/marketplace.json >/dev/null
 python3 -m json.tool plugins/apple-mail/.codex-plugin/plugin.json >/dev/null
 python3 -m json.tool plugins/apple-mail/.mcp.json >/dev/null
-python3 -m json.tool plugins/llm-code-auditor/.codex-plugin/plugin.json >/dev/null
 node --check plugins/apple-mail/scripts/apple-mail-mcp.mjs
-python3 -m py_compile \
-  plugins/llm-code-auditor/skills/llm-code-auditor/scripts/llm_code_smell_scan.py \
-  plugins/llm-code-auditor/skills/llm-code-auditor/scripts/code_remodel.py \
-  plugins/llm-code-auditor/skills/llm-code-auditor/scripts/quality_lens.py
-python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_llm_code_smell_scan.py
-python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_code_remodel.py
-python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_quality_lens.py
-python3 plugins/llm-code-auditor/skills/llm-code-auditor/scripts/test_quality_benchmark.py
+
+# Validate the auditor plugin in its dedicated repository:
+# UV_CACHE_DIR=/private/tmp/uv-cache uv run python scripts/validate.py
 ```
 
 The repository URL used by plugin manifests is:
